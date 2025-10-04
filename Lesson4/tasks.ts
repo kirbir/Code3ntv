@@ -8,7 +8,7 @@ function createdI() {
   return randomUUID();
 }
 
-type Task = {
+export type Task = {
   id: string;
   text: string;
   completed: boolean;
@@ -48,22 +48,18 @@ function saveTasks(tasks: Task[]) {
 }
 
 // Add a new task to the file tasks.json
-export function addTask(task: string) {
-  try {
-    const tasks = loadTasks();
+export function addTask(task: string): Task {
+  const tasks = loadTasks();
+  const newTask: Task = {
+    id: createdI(),
+    text: task,
+    completed: false,
+  };
 
-    const newTask: Task = {
-      id: createdI(),
-      text: task,
-      completed: false,
-    };
-
-    tasks.push(newTask);
-    saveTasks(tasks);
-    console.log(chalk.green("New task added!"));
-  } catch (error) {
-    console.log(chalk.red("Error adding a new task: ", error));
-  }
+  tasks.push(newTask);
+  saveTasks(tasks);
+  console.log(chalk.green("New task added!"));
+  return newTask;
 }
 
 // List all tasks from the file tasks.json and print them to the console
@@ -82,7 +78,7 @@ export function listTasks() {
 }
 
 // Mark a task as done in the file tasks.json
-export function markTaskDone(id: string) {
+export function markTaskDone(id: string, completed: boolean = true): boolean {
   const tasks = loadTasks();
 
   const task = tasks.find((task) => {
@@ -93,8 +89,10 @@ export function markTaskDone(id: string) {
     return false;
   }
 
-  task.completed = true;
+  task.completed = completed;
   saveTasks(tasks);
+  console.log(chalk.green(`Marked task #${id} as done.`));
+  return true;
 }
 
 // Clear all tasks from the file tasks.json
@@ -102,4 +100,20 @@ export function clearTasks() {
   fs.writeFile(filePath, "", function () {
     console.log(chalk.green("All tasks cleared!"));
   });
+}
+
+export function clearTask(id: string) {
+  const tasks = loadTasks();
+  const task = tasks.find((task) => {
+    return task.id === id;
+  });
+
+  if (!task) {
+    return;
+  }
+
+  const newTask = tasks.filter((task) => {
+    return task.id !== id;
+  });
+  saveTasks(newTask);
 }
