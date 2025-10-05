@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 
 const filePath = "./tasks.json";
 
-function createdI() {
+function createdId() {
   return randomUUID();
 }
 
@@ -51,7 +51,7 @@ function saveTasks(tasks: Task[]) {
 export function addTask(task: string): Task {
   const tasks = loadTasks();
   const newTask: Task = {
-    id: createdI(),
+    id: createdId(),
     text: task,
     completed: false,
   };
